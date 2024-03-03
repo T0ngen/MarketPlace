@@ -1,0 +1,10 @@
+version: "2"
+sql:
+  - schema: "./database/migrations"
+    queries: "./database/query"
+    engine: "postgresql"
+    gen:
+      go:
+        out: "./database/sqlc"
+
+
