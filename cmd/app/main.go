@@ -1,6 +1,7 @@
 package main
 
 import (
+	
 	"log"
 	"marketplace/database/redis"
 	"marketplace/database/sqlc"
@@ -33,15 +34,17 @@ func main(){
 		return
 	}
 	
-	redisCon, err := redis.OpenRedis()
+	redisCon := redis.OpenRedis()
+	
 	if err != nil{
 		logger.Errorf("error in connection to redis: %s", err)
 	}
-	_ = redisCon
+	
+	
 
 
 	queries := sqlc.New(db)
-	newGoodsHanlder := goodshandler.NewGoodsHandler(queries, logger)
+	newGoodsHanlder := goodshandler.NewGoodsHandler(queries, logger, *redisCon)
 
 
 	router := mux.NewRouter()

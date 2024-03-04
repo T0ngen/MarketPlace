@@ -1,12 +1,16 @@
 package redis
 
 
-import "github.com/gomodule/redigo/redis"
+import "github.com/redis/go-redis/v9"
  
-func OpenRedis() (redis.Conn, error) {
-    c, err := redis.DialURL("redis://localhost:6379/0")
-    if err != nil {
-        return nil, err
-    }
-    return c, nil
+
+
+
+func OpenRedis() *redis.Client {
+    redisClient := redis.NewClient(&redis.Options{
+        Addr:     "localhost:6379",
+        Password: "", // если есть пароль, укажите его здесь
+        DB:       0,
+       })
+    return redisClient
 }

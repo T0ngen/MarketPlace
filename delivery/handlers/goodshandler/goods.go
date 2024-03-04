@@ -8,7 +8,9 @@ import (
 	"marketplace/delivery"
 	"net/http"
 	"net/url"
+	"time"
 
+	"github.com/redis/go-redis/v9"
 	"go.uber.org/zap"
 )
 
@@ -27,8 +29,8 @@ func checkUnkownParams(query url.Values) error{
 	return nil
 }
 
-
-func NewGoodsHandler(gH GoodsHandler, logger *zap.SugaredLogger)http.HandlerFunc{
+//TODO РАЗОБРАТЬ ХЭНДЛЕР
+func NewGoodsHandler(gH GoodsHandler, logger *zap.SugaredLogger, rdb redis.Client)http.HandlerFunc{
 	return func(w http.ResponseWriter, r *http.Request) {
 		
 		query := r.URL.Query()
@@ -39,28 +41,43 @@ func NewGoodsHandler(gH GoodsHandler, logger *zap.SugaredLogger)http.HandlerFunc
 			return
 		}
 		text := query.Get("text")
-		goods, err :=gH.GetGoodsByTitle(r.Context(), text)
+		ctx := context.Background()
+		val, err:= rdb.Get(ctx, text).Result()
+		if err == redis.Nil{
+			goods, err :=gH.GetGoodsByTitle(r.Context(), text)
 		
-		if err != nil{
-			errText := `{"message": "nothing found"}`
-			delivery.WriteResponse(logger, w, []byte(errText), http.StatusBadRequest)
-			return
-		}
-		if len(goods) ==0{
-			errText := `{"message": "nothing found"}`
-			delivery.WriteResponse(logger, w, []byte(errText), http.StatusBadRequest)
-			return
-		}
-		goodsJSON, err := json.Marshal(goods)
-		if err != nil{
-			errText := fmt.Sprintf(`{"message": "error in coding films: %s"}`, err)
-			delivery.WriteResponse(logger, w, []byte(errText), http.StatusInternalServerError)
-			return
-		}
-		
-		
+			if err != nil{
+				errText := `{"message": "nothing found"}`
+				delivery.WriteResponse(logger, w, []byte(errText), http.StatusBadRequest)
+				return
+			}
+			if len(goods) ==0{
+				errText := `{"message": "nothing found"}`
+				delivery.WriteResponse(logger, w, []byte(errText), http.StatusBadRequest)
+				return
+			}
+			goodsJSON, err := json.Marshal(goods)
+			if err != nil{
+				errText := fmt.Sprintf(`{"message": "error in coding films: %s"}`, err)
+				delivery.WriteResponse(logger, w, []byte(errText), http.StatusInternalServerError)
+				return
+			}
+			
+			
 
-		delivery.WriteResponse(logger, w, goodsJSON, http.StatusOK)
+			
+			err = rdb.Set(ctx, text, goodsJSON, 10*time.Second).Err()
+			if err != nil{
+				logger.Errorf("error with redis")
+			}
+			delivery.WriteResponse(logger, w, goodsJSON, http.StatusOK)
+		}else{
+			delivery.WriteResponse(logger, w, []byte(val), http.StatusOK)
+		}
+		
+		
+			
+		
 		
 		
 		
