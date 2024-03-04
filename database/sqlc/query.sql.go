@@ -70,26 +70,42 @@ func (q *Queries) DeleteGoodsById(ctx context.Context, id int32) error {
 	return err
 }
 
-const getGoodsByTitle = `-- name: GetGoodsByTitle :one
+const getGoodsByTitleOLD = `-- name: GetGoodsByTitleOLD :many
 SELECT id, seller_id, title, price, description, image, category, rating, discount, status, created_at FROM goods
-WHERE title = $1
+WHERE title ILIKE $1
 `
 
-func (q *Queries) GetGoodsByTitle(ctx context.Context, title string) (Good, error) {
-	row := q.db.QueryRowContext(ctx, getGoodsByTitle, title)
-	var i Good
-	err := row.Scan(
-		&i.ID,
-		&i.SellerID,
-		&i.Title,
-		&i.Price,
-		&i.Description,
-		&i.Image,
-		&i.Category,
-		&i.Rating,
-		&i.Discount,
-		&i.Status,
-		&i.CreatedAt,
-	)
-	return i, err
+func (q *Queries) GetGoodsByTitleOLD(ctx context.Context, title string) ([]Good, error) {
+	rows, err := q.db.QueryContext(ctx, getGoodsByTitleOLD, title)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Good
+	for rows.Next() {
+		var i Good
+		if err := rows.Scan(
+			&i.ID,
+			&i.SellerID,
+			&i.Title,
+			&i.Price,
+			&i.Description,
+			&i.Image,
+			&i.Category,
+			&i.Rating,
+			&i.Discount,
+			&i.Status,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }

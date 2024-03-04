@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"marketplace/database/redis"
 	"marketplace/database/sqlc"
 	"marketplace/delivery/handlers/goodshandler"
 	"net/http"
@@ -32,10 +33,19 @@ func main(){
 		return
 	}
 	
+	redisCon, err := redis.OpenRedis()
+	if err != nil{
+		logger.Errorf("error in connection to redis: %s", err)
+	}
+	_ = redisCon
+
+
 	queries := sqlc.New(db)
+	newGoodsHanlder := goodshandler.NewGoodsHandler(queries, logger)
+
 
 	router := mux.NewRouter()
-	router.HandleFunc("/users", goodshandler.NewGoodsHandler(queries)).Methods("GET")
+	router.HandleFunc("/search", newGoodsHanlder).Methods("GET")
 	addr := ":8080"
 	logger.Infow("starting server",
 		"type", "START",

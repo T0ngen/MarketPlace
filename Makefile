@@ -17,3 +17,16 @@ migratedown:
 test:
 	go test ./database/sqlc
 
+
+redis:
+	docker run -d -p 6379:6379 --name market-place redis
+
+redisstart:
+	docker start market-place
+
+redisstop:
+	docker stop market-place
+
+
+run:
+	go run cmd/app/main.go

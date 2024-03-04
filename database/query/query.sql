@@ -1,6 +1,9 @@
--- name: GetGoodsByTitle :one
+-- name: GetGoodsByTitleOLD :many
 SELECT * FROM goods
-WHERE title = $1;
+WHERE title ILIKE $1;
+
+
+
 
 -- name: CreateGoods :one
 INSERT INTO goods (
@@ -14,3 +17,4 @@ RETURNING *;
 -- name: DeleteGoodsById :exec
 DELETE FROM goods
 WHERE id = $1;
+
