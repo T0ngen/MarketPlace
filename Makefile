@@ -17,5 +17,3 @@ migratedown:
 test:
 	go test ./database/sqlc
 
-build:
-	go build -o ./cmd/app/main.go

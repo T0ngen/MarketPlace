@@ -3,6 +3,8 @@ package main
 import (
 	"log"
 	"marketplace/database/sqlc"
+	"marketplace/delivery/handlers/goodshandler"
+	"net/http"
 
 	"github.com/gorilla/mux"
 	"go.uber.org/zap"
@@ -29,6 +31,18 @@ func main(){
 		logger.Errorf("error in connection to mysql: %s", err)
 		return
 	}
-	_ = db
+	
+	queries := sqlc.New(db)
+
 	router := mux.NewRouter()
+	router.HandleFunc("/users", goodshandler.NewGoodsHandler(queries)).Methods("GET")
+	addr := ":8080"
+	logger.Infow("starting server",
+		"type", "START",
+		"addr", addr,
+	)
+	err = http.ListenAndServe(addr, router)
+	if err != nil {
+		logger.Fatalf("errror in server start")
+	}
 }
