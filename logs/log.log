@@ -1,0 +1,50 @@
+{
+  "level": "info",
+  "msg": "The logger is connected to the server!",
+  "time": "2024-03-22 21:55:02"
+}
+{
+  "level": "info",
+  "msg": "starting servertypeSTARTaddr:8080",
+  "time": "2024-03-22 21:55:02"
+}
+{
+  "level": "info",
+  "msg": "The logger is connected to the server!",
+  "time": "2024-03-22 21:56:04"
+}
+{
+  "level": "info",
+  "msg": "The Redis is connected to the server!",
+  "time": "2024-03-22 21:56:04"
+}
+{
+  "level": "info",
+  "msg": "The Postgres is connected to the server!",
+  "time": "2024-03-22 21:56:04"
+}
+{
+  "level": "info",
+  "msg": "starting servertypeSTARTaddr:8080",
+  "time": "2024-03-22 21:56:04"
+}
+{
+  "level": "info",
+  "msg": "The logger is connected to the server!",
+  "time": "2024-03-22 21:56:42"
+}
+{
+  "level": "info",
+  "msg": "The Redis is connected to the server!",
+  "time": "2024-03-22 21:56:42"
+}
+{
+  "level": "info",
+  "msg": "The Postgres is connected to the server!",
+  "time": "2024-03-22 21:56:42"
+}
+{
+  "level": "info",
+  "msg": "starting servertypeSTARTaddr:8080",
+  "time": "2024-03-22 21:56:42"
+}

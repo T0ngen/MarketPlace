@@ -18,3 +18,5 @@ RETURNING *;
 DELETE FROM goods
 WHERE id = $1;
 
+
+

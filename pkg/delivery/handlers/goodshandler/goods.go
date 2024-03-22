@@ -4,8 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"marketplace/database/sqlc"
-	"marketplace/delivery"
+	"marketplace/pkg/database/sqlc"
+	"marketplace/pkg/delivery"
+
 	"net/http"
 	"net/url"
 	"time"

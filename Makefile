@@ -8,14 +8,14 @@ dropdb:
 	docker exec -it postgresmarkteplace dropdb market
 
 migrateup:
-	migrate -path database/migrations -database "postgresql://root:1234@localhost:5435/market?sslmode=disable" -verbose up
+	migrate -path pkg/database/migrations -database "postgresql://root:1234@localhost:5435/market?sslmode=disable" -verbose up
 
 migratedown:
-	migrate -path database/migrations -database "postgresql://root:1234@localhost:5435/market?sslmode=disable" -verbose down
+	migrate -path pkg/database/migrations -database "postgresql://root:1234@localhost:5435/market?sslmode=disable" -verbose down
 
 .PHONY: test
 test:
-	go test ./database/sqlc
+	go test ./pkg/database/sqlc
 
 
 redis:
@@ -26,7 +26,6 @@ redisstart:
 
 redisstop:
 	docker stop market-place
-
 
 run:
 	go run cmd/app/main.go
