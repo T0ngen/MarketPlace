@@ -1,10 +1,12 @@
 version: "2"
 sql:
-  - schema: "./database/migrations"
-    queries: "./database/query"
+  - schema: "./pkg/common/database/migrations"
+    queries: "./pkg/common/database/query"
     engine: "postgresql"
+   
     gen:
       go:
-        out: "./database/sqlc"
+        out: "./pkg/common/database/sqlc"
+        emit_json_tags: true
 
 

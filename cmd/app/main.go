@@ -1,12 +1,16 @@
 package main
 
 import (
-	"marketplace/pkg/database/redis"
-	"marketplace/pkg/database/sqlc"
-	// "marketplace/pkg/logger"
-	"net/http"
+	"fmt"
+	"marketplace/pkg/api"
+	"marketplace/pkg/common/config"
+	"marketplace/pkg/common/database/redis"
+	"marketplace/pkg/common/database/sqlc"
 
-	"github.com/gorilla/mux"
+	// "marketplace/pkg/logger"
+
+	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator"
 	"github.com/sirupsen/logrus"
 )
 
@@ -16,37 +20,45 @@ func main(){
 	// logger.InitLogger()
 	logrus.Info("The logger is connected to the server!")
 	
-	db, err := sqlc.OpenPsgtreConnection()
+
+	var conf config.Config
+
+	db, err := sqlc.OpenPostgresConnection(conf)
+	fmt.Println(err)
 	if err != nil {
-		logrus.Fatalf("error in connection to mysql: %s", err)
+		logrus.Fatalf("error in connection to psql: %s", err)
 		return
 	}
 	
-	redisCon := redis.OpenRedis()
-	
-	if err != nil{
-		logrus.Fatalf("error in connection to redis: %s", err)
-	}
-	
-	_= redisCon
+	redisClient := redis.OpenRedis(conf)
 	logrus.Info("The Redis is connected to the server!")
 
+	validate := validator.New()
+	
 
-	client := sqlc.New(db)
-	_ = client
+	psgreClient := sqlc.New(db)
 	logrus.Info("The Postgres is connected to the server!")
 	// newGoodsHanlder := goodshandler.NewGoodsHandler(queries, logger, *redisCon)
 
+	r := gin.Default()
 
-	router := mux.NewRouter()
+	
+	
+	api.RegisterRouter(r,validate, redisClient, psgreClient)
+
 	// router.HandleFunc("/search", newGoodsHanlder).Methods("GET")
 	addr := ":8080"
 	logrus.Info("starting server",
 		"type", "START",
 		"addr", addr,
 	)
-	err = http.ListenAndServe(addr, router)
+
+	err = r.Run()
+	
 	if err != nil {
-		logrus.Fatalf("errror in server start")
+		logrus.Fatal("Can't start the server on the port: 8080")
+		return
 	}
+
+	logrus.Info("The server is up!")
 }

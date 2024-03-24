@@ -20,15 +20,15 @@ RETURNING id, seller_id, title, price, description, image, category, rating, dis
 `
 
 type CreateGoodsParams struct {
-	SellerID    int64
-	Title       string
-	Price       int64
-	Description string
-	Image       string
-	Category    string
-	Rating      string
-	Discount    int64
-	Status      string
+	SellerID    int64  `json:"seller_id"`
+	Title       string `json:"title"`
+	Price       int64  `json:"price"`
+	Description string `json:"description"`
+	Image       string `json:"image"`
+	Category    string `json:"category"`
+	Rating      string `json:"rating"`
+	Discount    int64  `json:"discount"`
+	Status      string `json:"status"`
 }
 
 func (q *Queries) CreateGoods(ctx context.Context, arg CreateGoodsParams) (Good, error) {

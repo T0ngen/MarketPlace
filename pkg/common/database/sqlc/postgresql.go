@@ -3,23 +3,33 @@ package sqlc
 import (
 	"context"
 	"database/sql"
-	"log"
-	"os"
+	"fmt"
+
+	"marketplace/pkg/common/config"
 
 	_ "github.com/lib/pq"
 )
 
-const connStr = "user=root password=1234 dbname=market sslmode=disable port=5435"
-const Dbdriver = "postgres"
 
-func OpenPsgtreConnection() (*sql.DB, error){
-	db, err := sql.Open(Dbdriver, connStr)
-	if err != nil {
-		log.Printf("Failed to connect to database %v\n", err)
-		os.Exit(1)
-	}
-	return db, nil
+
+
+func OpenPostgresConnection(conf config.Config) (*sql.DB, error) {
+    connStr := "user=root password=1234 dbname=market sslmode=disable port=5435"
+
+    db, err := sql.Open("postgres", connStr)
+    if err != nil {
+        return nil, fmt.Errorf("failed to connect to database: %v", err)
+    }
+
+    err = db.Ping()
+    if err != nil {
+        db.Close()
+        return nil, fmt.Errorf("failed to ping database: %v", err)
+    }
+
+    return db, nil
 }
+
 
 
 const getGoodsByTitle2 = `-- name: GetGoodsByTitle :many
